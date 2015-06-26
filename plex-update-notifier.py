@@ -23,11 +23,12 @@ class Plex:
         url = ''.join([self.api_url, '/pms/servers'])
         r = requests.get(url, headers=self.headers)
         root = ET.fromstring(r.text)
-        servers = {}
+        servers = [] 
         for child in root:
-            servers[child.get('name')] = { 'address': child.get('address'),
-                                           'port': child.get('port'),
-                                           'version': child.get('version') }
+            servers.append({ 'name': child.get('name'),
+                             'address': child.get('address'),
+                             'port': child.get('port'),
+                             'version': child.get('version') })
         return servers
 
     def update_available(self, address, port):
@@ -42,6 +43,6 @@ if __name__ == "__main__":
     password = getpass.getpass()
     plex = Plex(user, password, 'Plex Update Notifier')
     servers = plex.servers()
-    for server in servers.iterkeys():
-        print "{0} Update Available?: {1}".format(server,
-                                                  plex.update_available(servers[server]['address'], servers[server]['port'])) 
+    for server in servers:
+        print "{0} Update Available?: {1}".format(server["name"],
+                                                  plex.update_available(server['address'], server['port'])) 
